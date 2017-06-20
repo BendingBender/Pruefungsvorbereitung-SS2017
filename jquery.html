@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    #content {
+      background-color: #aaa;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #switcher {
+      float: right;
+      background-color: #ddd;
+      border: 1px solid gray;
+      margin: 1em;
+      padding: 1em;
+    }
+
+    body.large {
+      font-size: 1.5em;
+    }
+
+    body.narrow #content {
+      width: 960px;
+    }
+
+    .selected {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div id="content">
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit. A alias animi aperiam consequatur enim est iure iusto labore
+  maxime odit officia officiis, quibusdam quo similique suscipit vel velit vitae, voluptas?Lorem ipsum dolor sit amet,
+  consectetur adipisicing elit. Accusantium at deleniti eveniet, fugiat minima nostrum optio quam temporibus unde
+  voluptatum? Accusantium dignissimos facilis praesentium? Aspernatur eius eum neque pariatur repellat!
+</div>
+<div id="switcher-container">
+  <div id="switcher" class="switcher">
+    <h3>Style Switcher</h3>
+    <button id="switcher-default" class="selected">
+      Default
+    </button>
+    <button id="switcher-narrow">
+      Narrow Column
+    </button>
+    <button id="switcher-large">
+      Large Print
+    </button>
+  </div>
+  <button id="larger">Larger</button>
+  <button id="smaller">Smaller</button>
+  <div class="collapsible">
+    <a class="more" href="#">more</a>
+    <p style="display: none;">
+    </p>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/jquery/3.2.1/jquery.js"></script>
+<script>
+  const $more = $('.collapsible .more');
+  $more.data('isOpen', false);
+  $more.on('click', function (event) {
+    event.preventDefault();
+
+
+    if (!$more.data('isLoaded')) {
+      $('.collapsible > p').load('more.fragment.html', function () {
+        $more.data('isLoaded', true);
+        toggleCollapsible();
+      });
+    } else {
+      toggleCollapsible();
+    }
+  });
+
+
+  function toggleCollapsible() {
+    $more.data('isOpen', !$more.data('isOpen'));
+    $('.collapsible p').toggle();
+
+    if ($more.data('isOpen')) {
+      $more.text('less');
+    } else {
+      $more.text('more');
+    }
+  }
+  
+  const $body = $('body');
+  $('#switcher-default').on('click', function () {
+    $body
+      .removeClass('large')
+      .removeClass('narrow');
+  });
+  $('#switcher-narrow').on('click', function () {
+    $body
+      .addClass('narrow')
+      .removeClass('large');
+  });
+  $('#switcher-large').on('click', function () {
+    $body
+      .addClass('large')
+      .removeClass('narrow');
+  });
+  const $switcher = $('#switcher');
+  const $switcherButtons = $switcher.find('button');
+  $switcher.on('click', 'button', function () {
+    $switcherButtons.removeClass('selected');
+    $(this).addClass('selected');
+  });
+
+  $switcher.on('click', function (event) {
+    if (!$(event.target).is('button')) {
+      $switcherButtons.toggle();
+    }
+  });
+
+
+  const keymap = {
+    n: $('#switcher-narrow'),
+    l: $('#switcher-large'),
+    d: $('#switcher-default')
+  };
+
+  $(document).on('keydown', function (event) {
+    const $element = keymap[event.key];
+    if ($element) {
+      $element.trigger('click');
+    }
+  });
+
+
+  $('#larger, #smaller').on('click', function (event) {
+    const currSize = parseFloat($body.css('fontSize'));
+
+    if ($(event.target).is('#larger')) {
+      $body.css('fontSize', (currSize + 1) + 'px');
+    } else {
+      $body.css('fontSize', (currSize - 1) + 'px');
+    }
+  });
+
+</script>
+</body>
+</html>
